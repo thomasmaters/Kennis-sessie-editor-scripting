@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{18ABF60F-A34B-5F02-DE2E-3C95A4EA5CD3}</ProjectGuid>
+    <ProjectGuid>{D69F9372-7CC4-0A6D-F514-343BE333D031}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\GeoPainterMenu.cs" />
      <Compile Include="Assets\Scripts\Group.cs" />
      <Compile Include="Assets\Scripts\Groups.cs" />
+     <Compile Include="Assets\Scripts\Painter.cs" />
      <None Include="Assets\Editor\empty.txt" />
      <None Include="Assets\Scripts\empty.txt" />
      <None Include="Assets\GeoPainter\readme.txt" />
