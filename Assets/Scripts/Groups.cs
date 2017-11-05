@@ -6,10 +6,12 @@ using UnityEngine;
 public class Groups
 {
     private List<GameObject> groups = new List<GameObject>();
+    private PrefabPainter prefabPainter;
+    private GameObject previousEditGroup;
 
-    public Groups()
+    public Groups(PrefabPainter prefabPainter)
     {
-
+        this.prefabPainter = prefabPainter;
     }
 
     public void renderGUI()
@@ -26,24 +28,26 @@ public class Groups
     {
         int groupIndex = 0;
 
-        foreach (GameObject group in groups)
+        for (int i = groups.Count - 1; i >= 0; i--)
         {
             EditorGUILayout.BeginHorizontal();
             string myLabel = "" + (groupIndex + 1) + ": ";
             if (GUILayout.Button("Edit"))
             {
-                toggleIsEditing(group);
-                editGroup();
+                editGroup(groups[i]);
             }
-            if (group.GetComponent<Group>().isEditing())
+            if (GUILayout.Button("Delete"))
             {
-                myLabel += " (EDIT)";
+                deleteGroup(groups[i]);
             }
-			if (GUILayout.Button("Delete"))
-			{
-				deleteGroup(group);
-			}
-            group.name = EditorGUILayout.TextField(myLabel, text: group.name);
+            else
+            {
+                if (groups[i].GetComponent<Group>().isEditing())
+                {
+                    myLabel += " (EDIT)";
+                }
+                groups[i].name = EditorGUILayout.TextField(myLabel, text: groups[i].name);
+            }
             groupIndex++;
             EditorGUILayout.EndHorizontal();
         }
@@ -53,7 +57,7 @@ public class Groups
     {
         foreach (GameObject group in groups)
         {
-			group.GetComponent<Group>().isEditing(false);
+            group.GetComponent<Group>().isEditing(false);
         }
         editGroup.GetComponent<Group>().isEditing(true);
     }
@@ -65,14 +69,39 @@ public class Groups
         groups.Add(group);
     }
 
-    private void editGroup()
+    private void editGroup(GameObject group)
     {
-		//TO-DO: Toon bijbehorende editing GUI van Paint en Library
+        if (previousEditGroup != null)
+        {
+            savePrefabPainterSettings(previousEditGroup);
+            loadPrefabPainterSettings(group);
+        }
+        toggleIsEditing(group);
+        prefabPainter.setGroup(group);
+        previousEditGroup = group;
     }
 
-	private void deleteGroup(GameObject group)
-	{
-		groups.Remove(group);
-		UnityEngine.Object.DestroyImmediate(group);
-	}
+    private void savePrefabPainterSettings(GameObject group)
+    {
+        group.GetComponent<Group>().placementRadius = prefabPainter.placementRadius;
+        group.GetComponent<Group>().paintMode = prefabPainter.paintMode;
+        group.GetComponent<Group>().instantiateMeshOnly = prefabPainter.instantiateMeshOnly;
+        group.GetComponent<Group>().eraseRadius = prefabPainter.eraseRadius;
+        group.GetComponent<Group>().intensity = prefabPainter.intensity;
+    }
+
+    private void loadPrefabPainterSettings(GameObject group)
+    {
+        prefabPainter.placementRadius = group.GetComponent<Group>().placementRadius;
+        prefabPainter.paintMode = group.GetComponent<Group>().paintMode;
+        prefabPainter.instantiateMeshOnly = group.GetComponent<Group>().instantiateMeshOnly;
+        prefabPainter.eraseRadius = group.GetComponent<Group>().eraseRadius;
+        prefabPainter.intensity = group.GetComponent<Group>().intensity;
+    }
+
+    private void deleteGroup(GameObject group)
+    {
+        groups.Remove(group);
+        UnityEngine.Object.DestroyImmediate(group);
+    }
 }

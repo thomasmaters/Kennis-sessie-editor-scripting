@@ -6,18 +6,15 @@ public class Group : MonoBehaviour
 {
 
     private bool edit = false;
-	//TO-DO: Variabelen voor random plaatsing hier
+    public float placementRadius = 0;
+    public bool paintMode = false;
+    public bool instantiateMeshOnly = false;
+    public float eraseRadius = 10;
+    public double intensity = 0.01;
 
-    // Use this for initialization
-    void Start()
+    public void addObject()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        
     }
 
     public bool isEditing()
@@ -27,6 +24,6 @@ public class Group : MonoBehaviour
 
     public void isEditing(bool edit)
     {
-		this.edit = edit;
+        this.edit = edit;
     }
 }

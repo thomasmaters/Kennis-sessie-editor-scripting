@@ -3,31 +3,33 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class GeoPainterMenu : EditorWindow {
-private Groups groups = new Groups();
+public class GeoPainterMenu : EditorWindow
+{
+    private static PrefabPainter painter = new PrefabPainter();
+    private Groups groups = new Groups(painter);
+    private static PrefabPainterLibrary prefabPainterLibrary;
 
-    [MenuItem("Window/Leon Window")]
+    [MenuItem("Window/Prefab Painter")]
     static void Init()
     {
         // Get existing open window or if none, make a new one:
         GeoPainterMenu window = EditorWindow.GetWindow<GeoPainterMenu>();
         window.Show();
+        window.autoRepaintOnSceneChange = true;
+        prefabPainterLibrary = new PrefabPainterLibrary(window);
     }
 
-    // Use this for initialization
-    void Start()
+    void OnEnable()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        SceneView.onSceneGUIDelegate -= painter.CustomUpdate;
+        SceneView.onSceneGUIDelegate += painter.CustomUpdate;
+        painter.setTimer(Time.time);
     }
 
     void OnGUI()
     {
-		groups.renderGUI();
+        groups.renderGUI();
+        painter.DrawPainterGUI();
+        prefabPainterLibrary.drawGUI();
     }
 }
