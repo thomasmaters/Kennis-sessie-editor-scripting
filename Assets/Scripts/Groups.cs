@@ -39,6 +39,10 @@ public class Groups
             {
                 myLabel += " (EDIT)";
             }
+			if (GUILayout.Button("Delete"))
+			{
+				deleteGroup(group);
+			}
             group.name = EditorGUILayout.TextField(myLabel, text: group.name);
             groupIndex++;
             EditorGUILayout.EndHorizontal();
@@ -65,4 +69,10 @@ public class Groups
     {
 		//TO-DO: Toon bijbehorende editing GUI van Paint en Library
     }
+
+	private void deleteGroup(GameObject group)
+	{
+		groups.Remove(group);
+		UnityEngine.Object.DestroyImmediate(group);
+	}
 }
