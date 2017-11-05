@@ -28,7 +28,7 @@ public class Groups
     {
         int groupIndex = 0;
 
-        for (int i = groups.Count - 1; i >= 0; i--)
+        foreach (GameObject group in groups)
         {
             EditorGUILayout.BeginHorizontal();
             string myLabel = "" + (groupIndex + 1) + ": ";
@@ -36,18 +36,15 @@ public class Groups
             {
                 editGroup(groups[i]);
             }
-            if (GUILayout.Button("Delete"))
+            if (group.GetComponent<Group>().isEditing())
             {
-                deleteGroup(groups[i]);
+                myLabel += " (EDIT)";
             }
-            else
-            {
-                if (groups[i].GetComponent<Group>().isEditing())
-                {
-                    myLabel += " (EDIT)";
-                }
-                groups[i].name = EditorGUILayout.TextField(myLabel, text: groups[i].name);
-            }
+			if (GUILayout.Button("Delete"))
+			{
+				deleteGroup(group);
+			}
+            group.name = EditorGUILayout.TextField(myLabel, text: group.name);
             groupIndex++;
             EditorGUILayout.EndHorizontal();
         }
@@ -57,7 +54,7 @@ public class Groups
     {
         foreach (GameObject group in groups)
         {
-            group.GetComponent<Group>().isEditing(false);
+			group.GetComponent<Group>().isEditing(false);
         }
         editGroup.GetComponent<Group>().isEditing(true);
     }
