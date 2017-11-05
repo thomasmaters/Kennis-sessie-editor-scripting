@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class PrefabPainterLibrary : EditorWindow {
+public class PrefabPainterLibrary
+{
 
     private List<LibraryItem> libraryItemList = new List<LibraryItem>();
     private Vector2 libraryScrollPos;
     private float iconSize = 100;
 
-    private static PrefabPainterLibrary window;
-    private static int instanceID;
+    private GeoPainterMenu window;
+    private int instanceID;
 
-    [MenuItem("Window/Library")]
-    static void Init()
+    public PrefabPainterLibrary(GeoPainterMenu window)
     {
-        window = EditorWindow.GetWindow<PrefabPainterLibrary>();      
-        window.Show();
         instanceID = window.GetInstanceID();
+        this.window = window;
     }
 
     public List<GameObject> getSelectedLibraryItems()
@@ -25,7 +24,7 @@ public class PrefabPainterLibrary : EditorWindow {
         List<GameObject> returnList = new List<GameObject>();
         foreach (LibraryItem item in libraryItemList)
         {
-            if(item.selected)
+            if (item.selected)
             {
                 returnList.Add(item.prefab);
             }
@@ -33,12 +32,12 @@ public class PrefabPainterLibrary : EditorWindow {
         return returnList;
     }
 
-    void OnGUI()
+    public void drawGUI()
     {
         if (Event.current.commandName == "ObjectSelectorUpdated" && EditorGUIUtility.GetObjectPickerControlID() == instanceID)
         {
             Object selection = EditorGUIUtility.GetObjectPickerObject();
-            if ( selection as GameObject != null)
+            if (selection as GameObject != null)
             {
                 libraryItemList.Add(new LibraryItem(selection as GameObject, this));
                 instanceID = -1;
@@ -49,7 +48,7 @@ public class PrefabPainterLibrary : EditorWindow {
         iconSize = EditorGUILayout.Slider(iconSize, 48, 128);
         EditorGUILayout.EndHorizontal();
 
-        float windowWidth = EditorGUIUtility.currentViewWidth;   
+        float windowWidth = EditorGUIUtility.currentViewWidth;
         int maxInWidth = (int)Mathf.Floor(windowWidth / iconSize);
         int maxInHeight = (int)Mathf.Ceil(((float)libraryItemList.Count) / maxInWidth);
         libraryScrollPos = EditorGUILayout.BeginScrollView(libraryScrollPos, false, false, GUILayout.Width(windowWidth), GUILayout.Height(iconSize * maxInHeight), GUILayout.MaxHeight(400));
@@ -62,21 +61,21 @@ public class PrefabPainterLibrary : EditorWindow {
             {
                 if (j < libraryItemList.Count)
                 {
-                    libraryItemList[j].Draw(new Vector2(iconSize,iconSize));
+                    libraryItemList[j].Draw(new Vector2(iconSize, iconSize));
                 }
                 else
                 {
-                    GUILayout.Button("",GUIStyle.none, GUILayout.Width(iconSize), GUILayout.Height(iconSize));
+                    GUILayout.Button("", GUIStyle.none, GUILayout.Width(iconSize), GUILayout.Height(iconSize));
                 }
             }
             EditorGUILayout.EndHorizontal();
         }
         EditorGUILayout.EndVertical();
-        
+
         EditorGUILayout.EndScrollView();
         EditorGUILayout.BeginHorizontal();
 
-        if(GUILayout.Button("add"))
+        if (GUILayout.Button("add"))
         {
             instanceID = window.GetInstanceID();
             EditorGUIUtility.ShowObjectPicker<GameObject>(null, false, "", instanceID);
@@ -89,9 +88,10 @@ public class PrefabPainterLibrary : EditorWindow {
         libraryItemList.Remove(item);
     }
 
-    void Update () {
-		
-	}
+    void Update()
+    {
+
+    }
 }
 
 public class LibraryItem
@@ -113,7 +113,7 @@ public class LibraryItem
 
     public void updatePreview()
     {
-        if(prefab != null)
+        if (prefab != null)
         {
             preview = AssetPreview.GetAssetPreview(prefab as Object);
         }
@@ -121,9 +121,13 @@ public class LibraryItem
 
     public void Draw(Vector2 size)
     {
-        if(AssetPreview.IsLoadingAssetPreview(prefab.GetInstanceID()))
+        if (AssetPreview.IsLoadingAssetPreview(prefab.GetInstanceID()))
         {
             updatePreview();
+        }
+        if (preview == null)
+        {
+            preview = AssetDatabase.GetCachedIcon(AssetDatabase.GetAssetPath(prefab));
         }
         buttonStyle = new GUIStyle(GUI.skin.button);
         buttonStyle.margin = new RectOffset();

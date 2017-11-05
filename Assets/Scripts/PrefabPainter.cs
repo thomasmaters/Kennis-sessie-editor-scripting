@@ -1,32 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 
 public class PrefabPainter
 {
 
     public bool paintMode = false;
-    public bool eraseMode = false;
-    public int radius = 10;
+    public bool instantiateMeshOnly = false;
+    public float eraseRadius = 10;
+    public float placementRadius = 9;
+    public double intensity = 0.01;
+    private double timer = 0;
+    double timeElapsed = 0;
     GameObject prefab;
     private GameObject group;
-    // Add menu named "My Window" to the Window menu
-    /*[MenuItem("Window/PPPainter")]
-	static void Init()
-	{
-		// Get existing open window or if none, make a new one:
-		EditorWindow window = (PrefabPainter)EditorWindow.GetWindow(typeof(PrefabPainter));
-		window.Show();
-		window.autoRepaintOnSceneChange = true;
-
-
-	}
-
-	void OnEnable(){
-		SceneView.onSceneGUIDelegate -= CustomUpdate;
-		SceneView.onSceneGUIDelegate += CustomUpdate;
-	}*/
 
 
     public void DrawPainterGUI()
@@ -37,21 +25,26 @@ public class PrefabPainter
         paintMode = EditorGUILayout.Toggle(paintMode);
         GUILayout.Label("Prefab: ");
         prefab = EditorGUILayout.ObjectField(prefab, typeof(GameObject), true) as GameObject;
-        GUILayout.Label("Radius: ");
-        radius = EditorGUILayout.IntField(radius);
-    }
-    void OnGUI()
-    {
-        DrawPainterGUI();
+        GUILayout.Label("Instantiate Mesh Only: ");
+        instantiateMeshOnly = EditorGUILayout.Toggle(instantiateMeshOnly);
+        GUILayout.Label("Placement Radius (Blue): ");
+        placementRadius = EditorGUILayout.Slider(placementRadius, 0, 100);
+        GUILayout.Label("Erase Radius (Red): ");
+        eraseRadius = EditorGUILayout.Slider(eraseRadius, 0, 100);
+        GUILayout.Label("Placement Timer: ");
+        intensity = EditorGUILayout.DoubleField(intensity);
     }
 
-    void onSceneGUI()
+    bool placementReady()
     {
-        drawHandles();
+        Debug.Log(timeElapsed);
+        return (timeElapsed > timer);
     }
 
     public void CustomUpdate(SceneView sv)
     {
+        timeElapsed += Time.deltaTime;
+
         if (paintMode)
         {
             drawHandles();
@@ -61,28 +54,41 @@ public class PrefabPainter
                 RaycastHit hit;
                 Tools.current = Tool.View;
                 int layer = 1 << 8;
-
+                Vector3 mousePos = new Vector3(e.mousePosition.x, Camera.current.pixelHeight - e.mousePosition.y, 0);
                 if (Physics.Raycast(Camera.current.ScreenPointToRay(new Vector3(e.mousePosition.x, Camera.current.pixelHeight - e.mousePosition.y, 0)), out hit, Mathf.Infinity, layer))
                 {
-                    GameObject placedObject = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
-                    //place object on mouse pos
-                    //TO-DO edit random ranges
-                    placedObject.transform.localScale = new Vector3(1, 1, 1) * Random.Range(0.5f, 2.0f);
-                    placedObject.transform.position = hit.point;
-                    placedObject.transform.position = new Vector3(placedObject.transform.position.x, placedObject.transform.position.y + (placedObject.transform.localScale.y / 2), placedObject.transform.position.z);
-					placedObject.transform.parent = group.transform;
+                    if (prefab != null)
+                    {
+                        if (instantiateMeshOnly)
+                        {
+                            //Graphics.DrawMesh (prefab.GetComponent<MeshFilter> ().sharedMesh, mousePos, Quaternion.Euler(0,0,0),layer);
+                        }
+                        else
+                        {
+                            if (placementReady())
+                            {
+                                GameObject placedObject = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+                                placedObject.transform.localScale = new Vector3(1, 1, 1) * Random.Range(0.5f, 2.0f);
 
-                    e.Use();
-                    Undo.RegisterCreatedObjectUndo(placedObject, "undo prefab paint");
+                                Vector2 randomPos = (Random.insideUnitCircle * placementRadius);
+                                placedObject.transform.position = new Vector3(hit.point.x + randomPos.x, hit.point.y + (placedObject.transform.localScale.y / 2), hit.point.z + randomPos.y);
+                                Undo.RegisterCreatedObjectUndo(placedObject, "undo prefab paint");
+                                placedObject.transform.parent = group.transform;
+                                timer = timeElapsed + intensity;
+                            }
+                        }
+                        e.Use();
+                    }
                 }
             }
             else if (((e.type == EventType.MouseDrag || e.type == EventType.MouseDown) && e.button == 0) && e.control)
             {
                 RaycastHit[] hits;
                 Tools.current = Tool.View;
-                Vector3 mousePos = new Vector3(e.mousePosition.x, Camera.current.pixelHeight - e.mousePosition.y, 0);
+
                 int layer = 1 << 8;
-                hits = Physics.SphereCastAll(Camera.current.ScreenPointToRay(mousePos), radius, layer);
+                Vector3 mousePos = new Vector3(e.mousePosition.x, Camera.current.pixelHeight - e.mousePosition.y, 0);
+                hits = Physics.SphereCastAll(Camera.current.ScreenPointToRay(mousePos), eraseRadius, layer);
 
                 if (hits.Length != 0)
                 {
@@ -105,23 +111,32 @@ public class PrefabPainter
         int layerMask = 1 << 8;
         if (Physics.Raycast(ray.origin, ray.direction, out hit, Mathf.Infinity, layerMask))
         {
-            if (radius != 0)
+            if (placementRadius != 0)
             {
                 Handles.color = Color.blue;
-                Handles.CircleCap(1, hit.point, Quaternion.LookRotation(hit.normal), radius);
+                Handles.CircleCap(1, hit.point, Quaternion.LookRotation(hit.normal), placementRadius);
+            }
+            if (eraseRadius != 0)
+            {
+                Handles.color = Color.red;
+                Handles.CircleCap(2, hit.point, Quaternion.LookRotation(hit.normal), eraseRadius);
             }
         }
         SceneView.RepaintAll();
     }
 
-    void OnInspectorUpdate()
+    // void OnInspectorUpdate()
+    // {
+    //     Repaint();
+    // }
+
+    public void setTimer(float time)
     {
-        // Repaint();
+        timer = time;
     }
 
     public void setGroup(GameObject group)
     {
-		this.group = group;
+        this.group = group;
     }
 }
-

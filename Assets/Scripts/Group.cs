@@ -6,8 +6,11 @@ public class Group : MonoBehaviour
 {
 
     private bool edit = false;
-    public int radius = 0;
-    //TO-DO: Variabelen voor random plaatsing hier
+    public float placementRadius = 0;
+    public bool paintMode = false;
+    public bool instantiateMeshOnly = false;
+    public float eraseRadius = 10;
+    public double intensity = 0.01;
 
     public void addObject()
     {

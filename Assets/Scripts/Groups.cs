@@ -79,17 +79,24 @@ public class Groups
         toggleIsEditing(group);
         prefabPainter.setGroup(group);
         previousEditGroup = group;
-        //TO-DO: Toon bijbehorende editing GUI van Paint en Library
     }
 
     private void savePrefabPainterSettings(GameObject group)
     {
-        group.GetComponent<Group>().radius = prefabPainter.radius;
+        group.GetComponent<Group>().placementRadius = prefabPainter.placementRadius;
+        group.GetComponent<Group>().paintMode = prefabPainter.paintMode;
+        group.GetComponent<Group>().instantiateMeshOnly = prefabPainter.instantiateMeshOnly;
+        group.GetComponent<Group>().eraseRadius = prefabPainter.eraseRadius;
+        group.GetComponent<Group>().intensity = prefabPainter.intensity;
     }
 
     private void loadPrefabPainterSettings(GameObject group)
     {
-        prefabPainter.radius = group.GetComponent<Group>().radius;
+        prefabPainter.placementRadius = group.GetComponent<Group>().placementRadius;
+        prefabPainter.paintMode = group.GetComponent<Group>().paintMode;
+        prefabPainter.instantiateMeshOnly = group.GetComponent<Group>().instantiateMeshOnly;
+        prefabPainter.eraseRadius = group.GetComponent<Group>().eraseRadius;
+        prefabPainter.intensity = group.GetComponent<Group>().intensity;
     }
 
     private void deleteGroup(GameObject group)
