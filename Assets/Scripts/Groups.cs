@@ -26,20 +26,27 @@ public class Groups
     {
         int groupIndex = 0;
 
-        foreach (GameObject group in groups)
+        for (int i = groups.Count - 1; i >= 0; i--)
         {
             EditorGUILayout.BeginHorizontal();
             string myLabel = "" + (groupIndex + 1) + ": ";
             if (GUILayout.Button("Edit"))
             {
-                toggleIsEditing(group);
+                toggleIsEditing(groups[i]);
                 editGroup();
             }
-            if (group.GetComponent<Group>().isEditing())
+            if (GUILayout.Button("Delete"))
             {
-                myLabel += " (EDIT)";
+                deleteGroup(groups[i]);
             }
-            group.name = EditorGUILayout.TextField(myLabel, text: group.name);
+            else
+            {
+                if (groups[i].GetComponent<Group>().isEditing())
+                {
+                    myLabel += " (EDIT)";
+                }
+                groups[i].name = EditorGUILayout.TextField(myLabel, text: groups[i].name);
+            }
             groupIndex++;
             EditorGUILayout.EndHorizontal();
         }
@@ -49,7 +56,7 @@ public class Groups
     {
         foreach (GameObject group in groups)
         {
-			group.GetComponent<Group>().isEditing(false);
+            group.GetComponent<Group>().isEditing(false);
         }
         editGroup.GetComponent<Group>().isEditing(true);
     }
@@ -63,6 +70,12 @@ public class Groups
 
     private void editGroup()
     {
-		//TO-DO: Toon bijbehorende editing GUI van Paint en Library
+        //TO-DO: Toon bijbehorende editing GUI van Paint en Library
+    }
+
+    private void deleteGroup(GameObject group)
+    {
+        groups.Remove(group);
+        UnityEngine.Object.DestroyImmediate(group);
     }
 }
