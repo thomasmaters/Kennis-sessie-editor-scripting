@@ -1,118 +1,156 @@
-﻿// using System.Collections;
-// using System.Collections.Generic;
-// using UnityEditor;
-// using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 
-// public class PrefabPainterLibrary : EditorWindow {
+public class PrefabPainterLibrary : EditorWindow {
 
-//     private List<LibraryItem> libraryItemList = new List<LibraryItem>();
-//     public GameObject testPrefeb;
-//     private Vector2 scrollPos;
+    private List<LibraryItem> libraryItemList = new List<LibraryItem>();
+    private Vector2 libraryScrollPos;
+    private float iconSize = 100;
 
+    private static PrefabPainterLibrary window;
+    private static int instanceID;
 
-//     [MenuItem("Window/My Window")]
-//     static void Init()
-//     {
-//         // Get existing open window or if none, make a new one:
-//         PrefabPainterLibrary window = EditorWindow.GetWindow<PrefabPainterLibrary>();
-//         window.Show();       
-//     }
+    [MenuItem("Window/Library")]
+    static void Init()
+    {
+        window = EditorWindow.GetWindow<PrefabPainterLibrary>();      
+        window.Show();
+        instanceID = window.GetInstanceID();
+    }
 
-//     private void Awake()
-//     {
-//         libraryItemList.Add(new LibraryItem(testPrefeb));
-//         libraryItemList.Add(new LibraryItem(testPrefeb));
-//         libraryItemList.Add(new LibraryItem(testPrefeb));
-//         libraryItemList.Add(new LibraryItem(testPrefeb));
-//         libraryItemList.Add(new LibraryItem(testPrefeb));
-//     }
+    public List<GameObject> getSelectedLibraryItems()
+    {
+        List<GameObject> returnList = new List<GameObject>();
+        foreach (LibraryItem item in libraryItemList)
+        {
+            if(item.selected)
+            {
+                returnList.Add(item.prefab);
+            }
+        }
+        return returnList;
+    }
 
-//     void OnGUI()
-//     {
-//         float windowWidth = EditorGUIUtility.currentViewWidth;
+    void OnGUI()
+    {
+        if (Event.current.commandName == "ObjectSelectorUpdated" && EditorGUIUtility.GetObjectPickerControlID() == instanceID)
+        {
+            Object selection = EditorGUIUtility.GetObjectPickerObject();
+            if ( selection as GameObject != null)
+            {
+                libraryItemList.Add(new LibraryItem(selection as GameObject, this));
+                instanceID = -1;
+            }
+        }
 
+        EditorGUILayout.BeginHorizontal();
+        iconSize = EditorGUILayout.Slider(iconSize, 48, 128);
+        EditorGUILayout.EndHorizontal();
+
+        float windowWidth = EditorGUIUtility.currentViewWidth;   
+        int maxInWidth = (int)Mathf.Floor(windowWidth / iconSize);
+        int maxInHeight = (int)Mathf.Ceil(((float)libraryItemList.Count) / maxInWidth);
+        libraryScrollPos = EditorGUILayout.BeginScrollView(libraryScrollPos, false, false, GUILayout.Width(windowWidth), GUILayout.Height(iconSize * maxInHeight), GUILayout.MaxHeight(400));
+
+        EditorGUILayout.BeginVertical();
+        for (int i = 0; i < maxInHeight; i++)
+        {
+            EditorGUILayout.BeginHorizontal();
+            for (int j = i * maxInWidth; j < i * maxInWidth + maxInWidth; j++)
+            {
+                if (j < libraryItemList.Count)
+                {
+                    libraryItemList[j].Draw(new Vector2(iconSize,iconSize));
+                }
+                else
+                {
+                    GUILayout.Button("",GUIStyle.none, GUILayout.Width(iconSize), GUILayout.Height(iconSize));
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+        EditorGUILayout.EndVertical();
         
-//         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(400));
-//         int count = 0;
-//         foreach (LibraryItem item in libraryItemList)
-//         {
-//             count++;
-//             if (count * 100 > windowWidth)
-//             {
-//                 count = 0;
-//                 item.Draw();
-//             }
-//             else
-//             {
-//                 item.Draw();
+        EditorGUILayout.EndScrollView();
+        EditorGUILayout.BeginHorizontal();
 
-//             }
-//         }
+        if(GUILayout.Button("add"))
+        {
+            instanceID = window.GetInstanceID();
+            EditorGUIUtility.ShowObjectPicker<GameObject>(null, false, "", instanceID);
+        }
+        EditorGUILayout.EndHorizontal();
+    }
 
-//         GUILayout.Button("add");
-//     }
+    public void removeFromLibrary(LibraryItem item)
+    {
+        libraryItemList.Remove(item);
+    }
 
-//     void Update () {
+    void Update () {
 		
-// 	}
-// }
+	}
+}
 
-// public class LibraryItem
-// {
-//     public bool selected = false;
+public class LibraryItem
+{
+    public bool selected = false;
+    public GameObject prefab;
 
-//     protected GameObject prefab;
-//     protected Texture preview;
-//     private GUIStyle buttonStyle;
-//     private GUIStyle labelStyle;
+    protected Texture preview;
+    private GUIStyle buttonStyle;
+    private GUIStyle labelStyle;
+    private PrefabPainterLibrary parent;
 
-//     private Texture2D green = Resources.Load("Green.asset") as Texture2D;
+    public LibraryItem(GameObject aPrefab, PrefabPainterLibrary aParent)
+    {
+        prefab = aPrefab;
+        parent = aParent;
+        updatePreview();
+    }
 
-//     int width = 100;
-//     int height = 100;
+    public void updatePreview()
+    {
+        if(prefab != null)
+        {
+            preview = AssetPreview.GetAssetPreview(prefab as Object);
+        }
+    }
 
-//     public LibraryItem(GameObject aPrefab)
-//     {
-//         prefab = aPrefab;
-//         updatePreview();
-//     }
+    public void Draw(Vector2 size)
+    {
+        if(AssetPreview.IsLoadingAssetPreview(prefab.GetInstanceID()))
+        {
+            updatePreview();
+        }
+        buttonStyle = new GUIStyle(GUI.skin.button);
+        buttonStyle.margin = new RectOffset();
 
-//     public void updatePreview()
-//     {
-//         if(prefab != null)
-//         {
-//             preview = AssetPreview.GetAssetPreview(prefab as Object);
-//         }
-//     }
+        labelStyle = new GUIStyle(GUI.skin.label);
+        labelStyle.margin = new RectOffset();
 
-//     public void Draw()
-//     {
-//         buttonStyle = new GUIStyle(GUI.skin.button);
-//         buttonStyle.margin = new RectOffset();
+        EditorGUILayout.BeginVertical();
 
-//         labelStyle = new GUIStyle(GUI.skin.label);
-//         labelStyle.margin = new RectOffset();
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label(prefab.name, GUILayout.Width(size.x - 28));
 
-//         EditorGUILayout.BeginVertical();
+        GUI.backgroundColor = Color.red;
+        if (GUILayout.Button(" X ", buttonStyle, GUILayout.Width(20)))
+        {
+            parent.removeFromLibrary(this);
+        }
 
-//         EditorGUILayout.BeginHorizontal();
-//         GUILayout.Label(prefab.name, GUILayout.Width(width - 28));
+        EditorGUILayout.EndHorizontal();
 
-//         GUI.backgroundColor = Color.red;
-//         if (GUILayout.Button(" X ", buttonStyle, GUILayout.Width(20)))
-//         {
+        GUI.backgroundColor = Color.green;
+        if (GUILayout.Button(preview, selected ? buttonStyle : GUIStyle.none, GUILayout.Width(size.x), GUILayout.Height(size.y)))
+        {
+            selected = !selected;
+        }
+        GUI.backgroundColor = Color.white;
 
-//         }
-
-//         EditorGUILayout.EndHorizontal();
-
-//         GUI.backgroundColor = Color.green;
-//         if (GUILayout.Button(preview, selected ? buttonStyle : GUIStyle.none, GUILayout.Width(100), GUILayout.Height(100)))
-//         {
-//             selected = !selected;
-//         }
-//         GUI.backgroundColor = Color.white;
-
-//         EditorGUILayout.EndVertical();
-//     }
-// }
+        EditorGUILayout.EndVertical();
+    }
+}
