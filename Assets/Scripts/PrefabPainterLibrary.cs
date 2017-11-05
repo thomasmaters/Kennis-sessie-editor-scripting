@@ -6,30 +6,31 @@ using UnityEngine;
 public class PrefabPainterLibrary : EditorWindow {
 
     private List<LibraryItem> libraryItemList = new List<LibraryItem>();
-    public GameObject testPrefeb;
     private Vector2 libraryScrollPos;
-
     private float iconSize = 100;
+
     private static PrefabPainterLibrary window;
     private static int instanceID;
 
     [MenuItem("Window/Library")]
     static void Init()
     {
-        window = EditorWindow.GetWindow<PrefabPainterLibrary>();
-
+        window = EditorWindow.GetWindow<PrefabPainterLibrary>();      
+        window.Show();
         instanceID = window.GetInstanceID();
-
-        window.Show();       
     }
 
-    private void Awake()
+    public List<GameObject> getSelectedLibraryItems()
     {
-        libraryItemList.Add(new LibraryItem(testPrefeb, this));
-        libraryItemList.Add(new LibraryItem(testPrefeb, this));
-        libraryItemList.Add(new LibraryItem(testPrefeb, this));
-        libraryItemList.Add(new LibraryItem(testPrefeb, this));
-        libraryItemList.Add(new LibraryItem(testPrefeb, this));
+        List<GameObject> returnList = new List<GameObject>();
+        foreach (LibraryItem item in libraryItemList)
+        {
+            if(item.selected)
+            {
+                returnList.Add(item.prefab);
+            }
+        }
+        return returnList;
     }
 
     void OnGUI()
@@ -74,6 +75,7 @@ public class PrefabPainterLibrary : EditorWindow {
         
         EditorGUILayout.EndScrollView();
         EditorGUILayout.BeginHorizontal();
+
         if(GUILayout.Button("add"))
         {
             instanceID = window.GetInstanceID();
@@ -95,8 +97,8 @@ public class PrefabPainterLibrary : EditorWindow {
 public class LibraryItem
 {
     public bool selected = false;
+    public GameObject prefab;
 
-    protected GameObject prefab;
     protected Texture preview;
     private GUIStyle buttonStyle;
     private GUIStyle labelStyle;
