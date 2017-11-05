@@ -6,10 +6,12 @@ using UnityEngine;
 public class Groups
 {
     private List<GameObject> groups = new List<GameObject>();
+    private PrefabPainter prefabPainter;
+    private GameObject previousEditGroup;
 
-    public Groups()
+    public Groups(PrefabPainter prefabPainter)
     {
-
+        this.prefabPainter = prefabPainter;
     }
 
     public void renderGUI()
@@ -32,8 +34,7 @@ public class Groups
             string myLabel = "" + (groupIndex + 1) + ": ";
             if (GUILayout.Button("Edit"))
             {
-                toggleIsEditing(groups[i]);
-                editGroup();
+                editGroup(groups[i]);
             }
             if (GUILayout.Button("Delete"))
             {
@@ -68,9 +69,27 @@ public class Groups
         groups.Add(group);
     }
 
-    private void editGroup()
+    private void editGroup(GameObject group)
     {
+        if (previousEditGroup != null)
+        {
+            savePrefabPainterSettings(previousEditGroup);
+            loadPrefabPainterSettings(group);
+        }
+        toggleIsEditing(group);
+        prefabPainter.setGroup(group);
+        previousEditGroup = group;
         //TO-DO: Toon bijbehorende editing GUI van Paint en Library
+    }
+
+    private void savePrefabPainterSettings(GameObject group)
+    {
+        group.GetComponent<Group>().radius = prefabPainter.radius;
+    }
+
+    private void loadPrefabPainterSettings(GameObject group)
+    {
+        prefabPainter.radius = group.GetComponent<Group>().radius;
     }
 
     private void deleteGroup(GameObject group)

@@ -6,18 +6,12 @@ public class Group : MonoBehaviour
 {
 
     private bool edit = false;
-	//TO-DO: Variabelen voor random plaatsing hier
+    public int radius = 0;
+    //TO-DO: Variabelen voor random plaatsing hier
 
-    // Use this for initialization
-    void Start()
+    public void addObject()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        
     }
 
     public bool isEditing()
@@ -27,6 +21,6 @@ public class Group : MonoBehaviour
 
     public void isEditing(bool edit)
     {
-		this.edit = edit;
+        this.edit = edit;
     }
 }
