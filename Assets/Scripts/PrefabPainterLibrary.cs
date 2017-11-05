@@ -7,49 +7,84 @@ public class PrefabPainterLibrary : EditorWindow {
 
     private List<LibraryItem> libraryItemList = new List<LibraryItem>();
     public GameObject testPrefeb;
-    private Vector2 scrollPos;
+    private Vector2 libraryScrollPos;
 
+    private float iconSize = 100;
+    private static PrefabPainterLibrary window;
+    private static int instanceID;
 
-    [MenuItem("Window/My Window")]
+    [MenuItem("Window/Library")]
     static void Init()
     {
-        // Get existing open window or if none, make a new one:
-        PrefabPainterLibrary window = EditorWindow.GetWindow<PrefabPainterLibrary>();
+        window = EditorWindow.GetWindow<PrefabPainterLibrary>();
+
+        instanceID = window.GetInstanceID();
+
         window.Show();       
     }
 
     private void Awake()
     {
-        libraryItemList.Add(new LibraryItem(testPrefeb));
-        libraryItemList.Add(new LibraryItem(testPrefeb));
-        libraryItemList.Add(new LibraryItem(testPrefeb));
-        libraryItemList.Add(new LibraryItem(testPrefeb));
-        libraryItemList.Add(new LibraryItem(testPrefeb));
+        libraryItemList.Add(new LibraryItem(testPrefeb, this));
+        libraryItemList.Add(new LibraryItem(testPrefeb, this));
+        libraryItemList.Add(new LibraryItem(testPrefeb, this));
+        libraryItemList.Add(new LibraryItem(testPrefeb, this));
+        libraryItemList.Add(new LibraryItem(testPrefeb, this));
     }
 
     void OnGUI()
     {
-        float windowWidth = EditorGUIUtility.currentViewWidth;
-
-        
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(400));
-        int count = 0;
-        foreach (LibraryItem item in libraryItemList)
+        if (Event.current.commandName == "ObjectSelectorUpdated" && EditorGUIUtility.GetObjectPickerControlID() == instanceID)
         {
-            count++;
-            if (count * 100 > windowWidth)
+            Object selection = EditorGUIUtility.GetObjectPickerObject();
+            if ( selection as GameObject != null)
             {
-                count = 0;
-                item.Draw();
-            }
-            else
-            {
-                item.Draw();
-
+                libraryItemList.Add(new LibraryItem(selection as GameObject, this));
+                instanceID = -1;
             }
         }
 
-        GUILayout.Button("add");
+        EditorGUILayout.BeginHorizontal();
+        iconSize = EditorGUILayout.Slider(iconSize, 48, 128);
+        EditorGUILayout.EndHorizontal();
+
+        float windowWidth = EditorGUIUtility.currentViewWidth;   
+        int maxInWidth = (int)Mathf.Floor(windowWidth / iconSize);
+        int maxInHeight = (int)Mathf.Ceil(((float)libraryItemList.Count) / maxInWidth);
+        libraryScrollPos = EditorGUILayout.BeginScrollView(libraryScrollPos, false, false, GUILayout.Width(windowWidth), GUILayout.Height(iconSize * maxInHeight), GUILayout.MaxHeight(400));
+
+        EditorGUILayout.BeginVertical();
+        for (int i = 0; i < maxInHeight; i++)
+        {
+            EditorGUILayout.BeginHorizontal();
+            for (int j = i * maxInWidth; j < i * maxInWidth + maxInWidth; j++)
+            {
+                if (j < libraryItemList.Count)
+                {
+                    libraryItemList[j].Draw(new Vector2(iconSize,iconSize));
+                }
+                else
+                {
+                    GUILayout.Button("",GUIStyle.none, GUILayout.Width(iconSize), GUILayout.Height(iconSize));
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+        EditorGUILayout.EndVertical();
+        
+        EditorGUILayout.EndScrollView();
+        EditorGUILayout.BeginHorizontal();
+        if(GUILayout.Button("add"))
+        {
+            instanceID = window.GetInstanceID();
+            EditorGUIUtility.ShowObjectPicker<GameObject>(null, false, "", instanceID);
+        }
+        EditorGUILayout.EndHorizontal();
+    }
+
+    public void removeFromLibrary(LibraryItem item)
+    {
+        libraryItemList.Remove(item);
     }
 
     void Update () {
@@ -65,15 +100,12 @@ public class LibraryItem
     protected Texture preview;
     private GUIStyle buttonStyle;
     private GUIStyle labelStyle;
+    private PrefabPainterLibrary parent;
 
-    private Texture2D green = Resources.Load("Green.asset") as Texture2D;
-
-    int width = 100;
-    int height = 100;
-
-    public LibraryItem(GameObject aPrefab)
+    public LibraryItem(GameObject aPrefab, PrefabPainterLibrary aParent)
     {
         prefab = aPrefab;
+        parent = aParent;
         updatePreview();
     }
 
@@ -85,8 +117,12 @@ public class LibraryItem
         }
     }
 
-    public void Draw()
+    public void Draw(Vector2 size)
     {
+        if(AssetPreview.IsLoadingAssetPreview(prefab.GetInstanceID()))
+        {
+            updatePreview();
+        }
         buttonStyle = new GUIStyle(GUI.skin.button);
         buttonStyle.margin = new RectOffset();
 
@@ -96,18 +132,18 @@ public class LibraryItem
         EditorGUILayout.BeginVertical();
 
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label(prefab.name, GUILayout.Width(width - 28));
+        GUILayout.Label(prefab.name, GUILayout.Width(size.x - 28));
 
         GUI.backgroundColor = Color.red;
         if (GUILayout.Button(" X ", buttonStyle, GUILayout.Width(20)))
         {
-
+            parent.removeFromLibrary(this);
         }
 
         EditorGUILayout.EndHorizontal();
 
         GUI.backgroundColor = Color.green;
-        if (GUILayout.Button(preview, selected ? buttonStyle : GUIStyle.none, GUILayout.Width(100), GUILayout.Height(100)))
+        if (GUILayout.Button(preview, selected ? buttonStyle : GUIStyle.none, GUILayout.Width(size.x), GUILayout.Height(size.y)))
         {
             selected = !selected;
         }
