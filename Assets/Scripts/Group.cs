@@ -11,7 +11,11 @@ public class Group : MonoBehaviour
     public bool instantiateMeshOnly = false;
     public float eraseRadius = 10;
     public double intensity = 0.01;
-
+	public int paintLayer = 8;
+	public Vector3 randomScaleMin;
+	public Vector3 randomScaleMax;
+	public Vector3 randomRotationMin;
+	public Vector3 randomRotationMax;
     public void addObject()
     {
         
