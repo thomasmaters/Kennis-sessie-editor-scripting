@@ -14,6 +14,7 @@ public class Group : MonoBehaviour
     public Vector3 randomScaleMax = new Vector3(2, 2, 2);
     public Vector3 randomRotationMin;
     public Vector3 randomRotationMax;
+    public List<LibraryItem> libraryItemList = new List<LibraryItem>();
 
     private bool edit = false;
 

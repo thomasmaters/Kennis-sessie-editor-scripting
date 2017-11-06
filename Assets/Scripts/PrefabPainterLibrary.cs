@@ -93,6 +93,16 @@ public class PrefabPainterLibrary
     {
 
     }
+
+    public List<LibraryItem> getLibraryItemList()
+    {
+        return libraryItemList;
+    }
+
+    public void setLibraryItemList(List<LibraryItem> libraryItemList)
+    {
+        this.libraryItemList = libraryItemList;
+    }
 }
 
 public class LibraryItem

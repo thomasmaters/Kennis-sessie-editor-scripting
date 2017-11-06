@@ -9,10 +9,12 @@ public class Groups
     private PrefabPainter prefabPainter;
     private GameObject previousEditGroup;
     private bool reloadPainterSettings = true;
+    private PrefabPainterLibrary prefabPainterLibrary;
 
-    public Groups(PrefabPainter prefabPainter)
+    public Groups(PrefabPainter prefabPainter, PrefabPainterLibrary prefabPainterLibrary)
     {
         this.prefabPainter = prefabPainter;
+        this.prefabPainterLibrary = prefabPainterLibrary;
         Group[] existingGroups = Object.FindObjectsOfType<Group>();
         foreach (Group group in existingGroups)
         {
@@ -106,6 +108,7 @@ public class Groups
         group.GetComponent<Group>().randomScaleMax = prefabPainter.randomScaleMax;
         group.GetComponent<Group>().randomRotationMin = prefabPainter.randomRotationMin;
         group.GetComponent<Group>().randomRotationMax = prefabPainter.randomRotationMax;
+        group.GetComponent<Group>().libraryItemList = prefabPainterLibrary.getLibraryItemList();
     }
 
     private void loadPrefabPainterSettings(GameObject group)
@@ -120,6 +123,7 @@ public class Groups
         prefabPainter.randomScaleMax = group.GetComponent<Group>().randomScaleMax;
         prefabPainter.randomRotationMin = group.GetComponent<Group>().randomRotationMin;
         prefabPainter.randomRotationMax = group.GetComponent<Group>().randomRotationMax;
+        prefabPainterLibrary.setLibraryItemList(group.GetComponent<Group>().libraryItemList);
     }
 
     private void deleteGroup(GameObject group)

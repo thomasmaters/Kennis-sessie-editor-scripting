@@ -18,7 +18,7 @@ public class GeoPainterMenu : EditorWindow
         window.autoRepaintOnSceneChange = true;
         prefabPainterLibrary = new PrefabPainterLibrary(window);
         painter = new PrefabPainter(prefabPainterLibrary);
-        groups = new Groups (painter);
+        groups = new Groups (painter, prefabPainterLibrary);
     }
 
     void OnEnable()
