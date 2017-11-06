@@ -44,10 +44,17 @@ public class PrefabPainterLibrary
             }
         }
 
-        GUILayout.Label("Library", EditorStyles.boldLabel);
-        EditorGUILayout.BeginHorizontal();
+		GUILayout.Label("Library", EditorStyles.boldLabel);        
+		EditorGUILayout.BeginHorizontal();
+
+		if (GUILayout.Button("Add prefab to library"))
+		{
+			instanceID = window.GetInstanceID();
+			EditorGUIUtility.ShowObjectPicker<GameObject>(null, false, "", instanceID);
+		}
+		EditorGUILayout.EndHorizontal();
+		GUILayout.Label ("Scale: ");
         iconSize = EditorGUILayout.Slider(iconSize, 48, 128);
-        EditorGUILayout.EndHorizontal();
 
         float windowWidth = EditorGUIUtility.currentViewWidth;
         int maxInWidth = (int)Mathf.Floor(windowWidth / iconSize);
@@ -74,14 +81,7 @@ public class PrefabPainterLibrary
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.EndScrollView();
-        EditorGUILayout.BeginHorizontal();
 
-        if (GUILayout.Button("add"))
-        {
-            instanceID = window.GetInstanceID();
-            EditorGUIUtility.ShowObjectPicker<GameObject>(null, false, "", instanceID);
-        }
-        EditorGUILayout.EndHorizontal();
     }
 
     public void removeFromLibrary(LibraryItem item)

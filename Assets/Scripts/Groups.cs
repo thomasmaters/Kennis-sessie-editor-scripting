@@ -6,11 +6,11 @@ using UnityEngine;
 public class Groups
 {
     private List<GameObject> groups = new List<GameObject>();
-    private PrefabPainter prefabPainter;
+	private Painter prefabPainter;
     private GameObject previousEditGroup;
     private bool reloadPainterSettings = true;
 
-    public Groups(PrefabPainter prefabPainter)
+	public Groups(Painter prefabPainter)
     {
         this.prefabPainter = prefabPainter;
         Group[] existingGroups = Object.FindObjectsOfType<Group>();
@@ -23,7 +23,7 @@ public class Groups
     public void renderGUI()
     {
         GUILayout.Label("Groups", EditorStyles.boldLabel);
-        if (GUILayout.Button("+"))
+        if (GUILayout.Button("Add Group"))
         {
             addGroup();
         }
