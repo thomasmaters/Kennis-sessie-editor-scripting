@@ -30,7 +30,6 @@ public class PrefabPainter
 
 	public void DrawPainterGUI()
 	{
-
 		GUILayout.Label("Prefab Painter", EditorStyles.boldLabel);
 		GUILayout.Label("LMB Drag to paint, CTRL + LMB Drag to erase");
 		GUILayout.Label("Paint Mode: ");
@@ -60,7 +59,7 @@ public class PrefabPainter
 	public void CustomUpdate (SceneView sv){
 		timeElapsed += Time.deltaTime;
 		if (paintMode) {
-			Debug.Log (prefabs);
+			Debug.Log (prefabs.Count);
 			drawHandles ();
 			Event e = Event.current;
 			if (((e.type == EventType.MouseDrag || e.type == EventType.MouseDown) && e.button == 0) && !e.control) {
