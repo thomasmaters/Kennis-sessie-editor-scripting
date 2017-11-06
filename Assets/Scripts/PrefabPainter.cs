@@ -18,7 +18,7 @@ public class PrefabPainter : EditorWindow
         window.autoRepaintOnSceneChange = true;
         prefabPainterLibrary = new PrefabPainterLibrary(window);
 		painter = new Painter(prefabPainterLibrary);
-        groups = new Groups (painter);
+		groups = new Groups (painter, prefabPainterLibrary);
     }
 
     void OnEnable()

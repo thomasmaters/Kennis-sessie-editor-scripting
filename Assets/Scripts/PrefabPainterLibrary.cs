@@ -10,10 +10,10 @@ public class PrefabPainterLibrary
     private Vector2 libraryScrollPos;
     private float iconSize = 100;
 
-    private GeoPainterMenu window;
+	private PrefabPainter window;
     private int instanceID;
 
-    public PrefabPainterLibrary(GeoPainterMenu window)
+	public PrefabPainterLibrary(PrefabPainter window)
     {
         instanceID = window.GetInstanceID();
         this.window = window;

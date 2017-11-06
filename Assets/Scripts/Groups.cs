@@ -11,7 +11,7 @@ public class Groups
     private bool reloadPainterSettings = true;
     private PrefabPainterLibrary prefabPainterLibrary;
     
-    public Groups(PrefabPainter prefabPainter, PrefabPainterLibrary prefabPainterLibrary)
+    public Groups(Painter prefabPainter, PrefabPainterLibrary prefabPainterLibrary)
 
     {
         this.prefabPainter = prefabPainter;
