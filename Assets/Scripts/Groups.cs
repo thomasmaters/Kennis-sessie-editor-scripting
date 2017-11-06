@@ -12,6 +12,10 @@ public class Groups
     public Groups(PrefabPainter prefabPainter)
     {
         this.prefabPainter = prefabPainter;
+		List<GameObject> existingGroups = Object.FindObjectsOfType<Group> ();
+		foreach(GameObject group in existingGroups){
+			existingGroups.Add (group);
+		}
     }
 
     public void renderGUI()
