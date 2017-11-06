@@ -44,6 +44,7 @@ public class PrefabPainterLibrary
             }
         }
 
+        GUILayout.Label("Library", EditorStyles.boldLabel);
         EditorGUILayout.BeginHorizontal();
         iconSize = EditorGUILayout.Slider(iconSize, 48, 128);
         EditorGUILayout.EndHorizontal();

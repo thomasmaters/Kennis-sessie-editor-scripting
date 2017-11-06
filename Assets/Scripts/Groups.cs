@@ -8,19 +8,21 @@ public class Groups
     private List<GameObject> groups = new List<GameObject>();
     private PrefabPainter prefabPainter;
     private GameObject previousEditGroup;
+    private bool reloadPainterSettings = true;
 
     public Groups(PrefabPainter prefabPainter)
     {
         this.prefabPainter = prefabPainter;
-		Group[] existingGroups = Object.FindObjectsOfType<Group> ();
-		foreach(Group group in existingGroups){
-			groups.Add (group.gameObject);
-		}
+        Group[] existingGroups = Object.FindObjectsOfType<Group>();
+        foreach (Group group in existingGroups)
+        {
+            groups.Add(group.gameObject);
+        }
     }
 
     public void renderGUI()
     {
-        GUILayout.Label("Groups");
+        GUILayout.Label("Groups", EditorStyles.boldLabel);
         if (GUILayout.Button("+"))
         {
             addGroup();
@@ -49,6 +51,16 @@ public class Groups
                 if (groups[i].GetComponent<Group>().isEditing())
                 {
                     myLabel += " (EDIT)";
+                    /*if (previousEditGroup == null)
+                    {
+                        previousEditGroup = groups[i];
+                    }*/
+                    if (reloadPainterSettings)
+                    {
+                        loadPrefabPainterSettings(groups[i]);
+                        reloadPainterSettings = false;
+                    }
+                    savePrefabPainterSettings(groups[i]);
                 }
                 groups[i].name = EditorGUILayout.TextField(myLabel, text: groups[i].name);
             }
@@ -75,11 +87,8 @@ public class Groups
 
     private void editGroup(GameObject group)
     {
-        if (previousEditGroup != null)
-        {
-            savePrefabPainterSettings(previousEditGroup);
-            loadPrefabPainterSettings(group);
-        }
+        reloadPainterSettings = true;
+        // savePrefabPainterSettings(previousEditGroup);
         toggleIsEditing(group);
         prefabPainter.setGroup(group);
         previousEditGroup = group;
@@ -87,20 +96,30 @@ public class Groups
 
     private void savePrefabPainterSettings(GameObject group)
     {
-        group.GetComponent<Group>().placementRadius = prefabPainter.placementRadius;
+        group.GetComponent<Group>().paintLayer = prefabPainter.paintLayer;
         group.GetComponent<Group>().paintMode = prefabPainter.paintMode;
         group.GetComponent<Group>().instantiateMeshOnly = prefabPainter.instantiateMeshOnly;
         group.GetComponent<Group>().eraseRadius = prefabPainter.eraseRadius;
+        group.GetComponent<Group>().placementRadius = prefabPainter.placementRadius;
         group.GetComponent<Group>().intensity = prefabPainter.intensity;
+        group.GetComponent<Group>().randomScaleMin = prefabPainter.randomScaleMin;
+        group.GetComponent<Group>().randomScaleMax = prefabPainter.randomScaleMax;
+        group.GetComponent<Group>().randomRotationMin = prefabPainter.randomRotationMin;
+        group.GetComponent<Group>().randomRotationMax = prefabPainter.randomRotationMax;
     }
 
     private void loadPrefabPainterSettings(GameObject group)
     {
-        prefabPainter.placementRadius = group.GetComponent<Group>().placementRadius;
+        prefabPainter.paintLayer = group.GetComponent<Group>().paintLayer;
         prefabPainter.paintMode = group.GetComponent<Group>().paintMode;
         prefabPainter.instantiateMeshOnly = group.GetComponent<Group>().instantiateMeshOnly;
         prefabPainter.eraseRadius = group.GetComponent<Group>().eraseRadius;
+        prefabPainter.placementRadius = group.GetComponent<Group>().placementRadius;
         prefabPainter.intensity = group.GetComponent<Group>().intensity;
+        prefabPainter.randomScaleMin = group.GetComponent<Group>().randomScaleMin;
+        prefabPainter.randomScaleMax = group.GetComponent<Group>().randomScaleMax;
+        prefabPainter.randomRotationMin = group.GetComponent<Group>().randomRotationMin;
+        prefabPainter.randomRotationMax = group.GetComponent<Group>().randomRotationMax;
     }
 
     private void deleteGroup(GameObject group)
