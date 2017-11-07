@@ -102,7 +102,10 @@ public class Painter
                                 //position
 
                                 Vector2 randomPos = (Random.insideUnitCircle * placementRadius);
+                                RaycastHit placedObjectHit;
                                 placedObject.transform.position = new Vector3(hit.point.x + randomPos.x, hit.point.y + (placedObject.transform.localScale.y / 2), hit.point.z + randomPos.y);
+                                Physics.Raycast(placedObject.transform.position, Vector3.down, out placedObjectHit, Mathf.Infinity, layer);
+                                placedObject.transform.position = new Vector3(placedObject.transform.position.x, placedObjectHit.point.y, placedObject.transform.position.z);
                                 placedObject.transform.parent = group.transform;
                                 Undo.RegisterCreatedObjectUndo(placedObject, "undo prefab paint");
                                 timer = timeElapsed + intensity;
