@@ -7,11 +7,8 @@ public class Painter
 {
     public int paintLayer = 8;
     public bool paintMode = false;
-    public bool instantiateMeshOnly = false;
     public float eraseRadius = 10;
     public float placementRadius = 9;
-    public double intensity = 0.01;
-    private double timer = 0;
     double timeElapsed = 0;
     List<GameObject> prefabs;
     // GameObject prefab;
@@ -37,30 +34,21 @@ public class Painter
         paintMode = EditorGUILayout.Toggle(paintMode);
         GUILayout.Label("Paint Layer ");
         paintLayer = EditorGUILayout.IntField(paintLayer);
-        //GUILayout.Label("Instantiate Mesh Only: ");
-        //instantiateMeshOnly = EditorGUILayout.Toggle(instantiateMeshOnly);
         GUILayout.Label("Placement Radius (Blue): ");
         placementRadius = EditorGUILayout.Slider(placementRadius, 0, 100);
         GUILayout.Label("Erase Radius (Red): ");
         eraseRadius = EditorGUILayout.Slider(eraseRadius, 0, 100);
-        GUILayout.Label("Brush Intensity: ");
-        intensity = EditorGUILayout.DoubleField(intensity);
         randomScaleMin = EditorGUILayout.Vector3Field("Random Scale min. :", randomScaleMin);
         randomScaleMax = EditorGUILayout.Vector3Field("Random Scale max. :", randomScaleMax);
         randomRotationMin = EditorGUILayout.Vector3Field("Random Rotation min. :", randomRotationMin);
         randomRotationMax = EditorGUILayout.Vector3Field("Random Rotation max. :", randomRotationMax);
     }
 
-    bool placementReady()
-    {
-        return (timeElapsed > timer);
-    }
+   
 
     public void CustomUpdate(SceneView sv)
     {
-        timeElapsed += Time.deltaTime;
         prefabs = prefabLibrary.getSelectedLibraryItems();
-        Debug.Log("Selected prefabs: " + prefabs.Count);
 
         if (paintMode)
         {
@@ -76,15 +64,7 @@ public class Painter
                 {
                     if (prefabs.Count > 0)
                     {
-                        if (instantiateMeshOnly)
-                        {
-                            //Graphics.DrawMesh (prefab.GetComponent<MeshFilter> ().sharedMesh, mousePos, Quaternion.Euler(0,0,0),layer);
-                        }
-                        else
-                        {
                             GameObject prefab = getRandomPrefab(prefabs);
-                            if (placementReady())
-                            {
                                 GameObject placedObject = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
                                 //scale
                                 float randomScaleX = Random.Range(randomScaleMin.x, randomScaleMax.x);
@@ -99,18 +79,21 @@ public class Painter
                                 float RandomRotZ = Random.Range(randomRotationMin.y, randomRotationMax.y);
 
                                 placedObject.transform.rotation = Quaternion.Euler(randomRotX, randomRotY, RandomRotZ);
-                                //position
 
                                 Vector2 randomPos = (Random.insideUnitCircle * placementRadius);
                                 RaycastHit placedObjectHit;
                                 placedObject.transform.position = new Vector3(hit.point.x + randomPos.x, hit.point.y + (placedObject.transform.localScale.y / 2), hit.point.z + randomPos.y);
-                                Physics.Raycast(placedObject.transform.position, Vector3.down, out placedObjectHit, Mathf.Infinity, layer);
-                                placedObject.transform.position = new Vector3(placedObject.transform.position.x, placedObjectHit.point.y, placedObject.transform.position.z);
-                                placedObject.transform.parent = group.transform;
-                                Undo.RegisterCreatedObjectUndo(placedObject, "undo prefab paint");
-                                timer = timeElapsed + intensity;
-                            }
-                        }
+								//second position to fix floating objects
+							if (Physics.Raycast (placedObject.transform.position, Vector3.down, out placedObjectHit, Mathf.Infinity, layer)) {
+								placedObject.transform.position = new Vector3 (placedObject.transform.position.x, placedObjectHit.point.y + (placedObject.transform.localScale.y / 2), placedObject.transform.position.z);
+								placedObject.transform.parent = group.transform;
+							
+								Undo.RegisterCreatedObjectUndo (placedObject, "undo prefab paint");
+							} else {
+								Object.DestroyImmediate (placedObject);
+							}
+                            
+                        
                         e.Use();
                     }
                 }
@@ -128,7 +111,8 @@ public class Painter
                     foreach (RaycastHit hit in hits)
                     {
 						if (hit.transform.parent == group.transform) {
-							Undo.DestroyObjectImmediate ((Object)hit.transform.gameObject);
+							if(prefabs.FindIndex(i => i.name == hit.transform.gameObject.name) > -1) 
+								Undo.DestroyObjectImmediate ((Object)hit.transform.gameObject);
 						}
                     }
                     e.Use();
@@ -140,8 +124,6 @@ public class Painter
     GameObject getRandomPrefab(List<GameObject> prefabs)
     {
         int index = Random.Range(0, prefabs.Count);
-        Debug.Log("PC: " + prefabs.Count);
-        Debug.Log("i: " + index);
         return prefabs[index];
     }
 
@@ -171,13 +153,12 @@ public class Painter
     //     Repaint();
     // }
 
-    public void setTimer(float time)
-    {
-        timer = time;
-    }
-
     public void setGroup(GameObject group)
     {
         this.group = group;
     }
+
+	public void OnDestroy(){
+		paintMode = false;
+	}
 }

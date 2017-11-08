@@ -101,10 +101,8 @@ public class Groups
     {
         group.GetComponent<Group>().paintLayer = prefabPainter.paintLayer;
         group.GetComponent<Group>().paintMode = prefabPainter.paintMode;
-        group.GetComponent<Group>().instantiateMeshOnly = prefabPainter.instantiateMeshOnly;
         group.GetComponent<Group>().eraseRadius = prefabPainter.eraseRadius;
         group.GetComponent<Group>().placementRadius = prefabPainter.placementRadius;
-        group.GetComponent<Group>().intensity = prefabPainter.intensity;
         group.GetComponent<Group>().randomScaleMin = prefabPainter.randomScaleMin;
         group.GetComponent<Group>().randomScaleMax = prefabPainter.randomScaleMax;
         group.GetComponent<Group>().randomRotationMin = prefabPainter.randomRotationMin;
@@ -116,10 +114,8 @@ public class Groups
     {
         prefabPainter.paintLayer = group.GetComponent<Group>().paintLayer;
         prefabPainter.paintMode = group.GetComponent<Group>().paintMode;
-        prefabPainter.instantiateMeshOnly = group.GetComponent<Group>().instantiateMeshOnly;
         prefabPainter.eraseRadius = group.GetComponent<Group>().eraseRadius;
         prefabPainter.placementRadius = group.GetComponent<Group>().placementRadius;
-        prefabPainter.intensity = group.GetComponent<Group>().intensity;
         prefabPainter.randomScaleMin = group.GetComponent<Group>().randomScaleMin;
         prefabPainter.randomScaleMax = group.GetComponent<Group>().randomScaleMax;
         prefabPainter.randomRotationMin = group.GetComponent<Group>().randomRotationMin;

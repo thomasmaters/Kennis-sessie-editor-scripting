@@ -34,7 +34,6 @@ public class PrefabPainter : EditorWindow
     {
         SceneView.onSceneGUIDelegate -= painter.CustomUpdate;
         SceneView.onSceneGUIDelegate += painter.CustomUpdate;
-        painter.setTimer(Time.time);
         groups.renderGUI();
         painter.DrawPainterGUI();
         prefabPainterLibrary.drawGUI();
