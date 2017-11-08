@@ -128,7 +128,8 @@ public class Painter
                     foreach (RaycastHit hit in hits)
                     {
 						if (hit.transform.parent == group.transform) {
-							Undo.DestroyObjectImmediate ((Object)hit.transform.gameObject);
+							if(prefabs.FindIndex(i => i.name == hit.transform.gameObject.name) > -1) 
+								Undo.DestroyObjectImmediate ((Object)hit.transform.gameObject);
 						}
                     }
                     e.Use();
@@ -140,8 +141,6 @@ public class Painter
     GameObject getRandomPrefab(List<GameObject> prefabs)
     {
         int index = Random.Range(0, prefabs.Count);
-        Debug.Log("PC: " + prefabs.Count);
-        Debug.Log("i: " + index);
         return prefabs[index];
     }
 
@@ -180,4 +179,8 @@ public class Painter
     {
         this.group = group;
     }
+
+	public void OnDestroy(){
+		paintMode = false;
+	}
 }
