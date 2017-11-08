@@ -3786,7 +3786,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &429975871
 Prefab:
@@ -4127,61 +4127,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cc13325226c9a4648a26a245c777edf2, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &463319329
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 463319331}
-  - component: {fileID: 463319330}
-  m_Layer: 0
-  m_Name: GeoPainterSys
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &463319330
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 463319329}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0addf81fe17020740b0ec3413391e47a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  paintLayer: 0
-  myGroupsBuiltIn:
-  - {fileID: 0}
-  nbrGroupsCreated: 20
-  myDistance: 0.5
-  mySpray: 1
-  myDelete: 2
-  useNormal: 1
-  groupSelIndex: 1
-  bibSortMethod:
-  - Random
-  - Solo
-  bibSortIndex: 0
-  bibSoloSelect: 0
-  rndAuto: 0
---- !u!4 &463319331
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 463319329}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &469565907 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4414629939618182, guid: cc13325226c9a4648a26a245c777edf2,
@@ -5475,34 +5420,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cc13325226c9a4648a26a245c777edf2, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &628963211
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 628963212}
-  m_Layer: 0
-  m_Name: GeoPainterMenu
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &628963212
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 628963211}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -97.43634, y: -1154.8345, z: -271.35992}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &632443950 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4414629939618182, guid: cc13325226c9a4648a26a245c777edf2,
@@ -14488,7 +14405,7 @@ Transform:
   - {fileID: 1261470613}
   - {fileID: 287364550}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1864602344 stripped
 Transform:
