@@ -34,11 +34,12 @@ public class PrefabPainterLibrary
 
     public void drawGUI()
     {
-        if (Event.current.commandName == "ObjectSelectorUpdated" && EditorGUIUtility.GetObjectPickerControlID() == instanceID)
+        if (Event.current.commandName == "ObjectSelectorClosed" && EditorGUIUtility.GetObjectPickerControlID() == instanceID)
         {
             Object selection = EditorGUIUtility.GetObjectPickerObject();
             if (selection as GameObject != null)
             {
+                AssetPreview.SetPreviewTextureCacheSize(1000);
                 libraryItemList.Add(new LibraryItem(selection as GameObject, this));
                 instanceID = -1;
             }
@@ -124,22 +125,20 @@ public class LibraryItem
 
     public void updatePreview()
     {
-        if (prefab != null)
-        {
-            preview = AssetPreview.GetAssetPreview(prefab as Object);
-        }
+        preview = AssetPreview.GetAssetPreview(prefab as Object);
     }
 
     public void Draw(Vector2 size)
     {
-        if (AssetPreview.IsLoadingAssetPreview(prefab.GetInstanceID()))
-        {
-            updatePreview();
-        }
         if (preview == null)
         {
             preview = AssetDatabase.GetCachedIcon(AssetDatabase.GetAssetPath(prefab));
         }
+        if (AssetPreview.IsLoadingAssetPreview(prefab.GetInstanceID()))
+        {
+            updatePreview();
+        }
+        updatePreview();
         buttonStyle = new GUIStyle(GUI.skin.button);
         buttonStyle.margin = new RectOffset();
 

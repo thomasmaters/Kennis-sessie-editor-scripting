@@ -115,7 +115,7 @@ public class Painter
     {
         RaycastHit hit;
         var ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-        int layerMask = 1 << 8;
+        int layerMask = 1 << paintLayer;
         if (Physics.Raycast(ray.origin, ray.direction, out hit, Mathf.Infinity, layerMask))
         {
             if (placementRadius != 0)
