@@ -16,6 +16,8 @@ public class Painter
     public Vector3 randomScaleMax;
     public Vector3 randomRotationMin;
     public Vector3 randomRotationMax;
+
+    public float density = 50;
     private GameObject group;
     private PrefabPainterLibrary prefabLibrary;
 
@@ -34,6 +36,8 @@ public class Painter
         paintMode = EditorGUILayout.Toggle(paintMode);
         GUILayout.Label("Paint Layer ");
         paintLayer = EditorGUILayout.IntField(paintLayer);
+        GUILayout.Label("Density: ");
+        density = EditorGUILayout.Slider(density, 0, 100);
         GUILayout.Label("Placement Radius (Blue): ");
         placementRadius = EditorGUILayout.Slider(placementRadius, 0, 100);
         GUILayout.Label("Erase Radius (Red): ");
@@ -64,6 +68,8 @@ public class Painter
                 {
                     if (prefabs.Count > 0)
                     {
+                         if (UnityEngine.Random.Range(0, 100) <= density)
+                         {
                             GameObject prefab = getRandomPrefab(prefabs);
                                 GameObject placedObject = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
                                 //scale
@@ -95,6 +101,7 @@ public class Painter
                             
                         
                         e.Use();
+                        }
                     }
                 }
             }
